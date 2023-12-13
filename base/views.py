@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db.models import Q
 
@@ -40,9 +40,15 @@ def students(request):
     return Response(data)
 
 
-@api_view(["GET"])
+@api_view(["GET", 'DELETE', 'PUT'])
 def student(request, matric_number):
     student = Student.objects.get(matric_number=matric_number)
-    serializer = StudentSerializer(student)
-    data = serializer.data
-    return JsonResponse(data, safe=False)
+    if request.method == 'GET':
+        serializer = StudentSerializer(student)
+        data = serializer.data
+        return Response(data)
+    if request.method == 'DELETE':
+        student.delete()
+        return Response("User was deleted")
+    
+    
