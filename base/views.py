@@ -50,5 +50,11 @@ def student(request, matric_number):
     if request.method == 'DELETE':
         student.delete()
         return Response("User was deleted")
-    
+    if request.method == 'PUT':
+        student.name = request.data['name']
+        student.matric_number = request.data['matric_number']
+        student.college = request.data['college']
+        student.department = request.data['department']
+        student.save() 
+        return Response("User was updated")
     
