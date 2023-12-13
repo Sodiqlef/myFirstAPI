@@ -16,15 +16,25 @@ def endpoints(request):
     return Response(data)
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def students(request):
     students = Student.objects.all()
-    query = request.GET.get('query')
-    if query == None:
-        pass
-    else:
-        students = Student.objects.filter(Q(matric_number__icontains = query) | Q(department__icontains=query))
-    
+    if request.method == 'GET':
+        query = request.GET.get('query')
+        if query == None:
+            pass
+        else:
+            students = Student.objects.filter(Q(matric_number__icontains = query) | Q(department__icontains=query))
+        
+        
+    else: 
+        student = Student.objects.create(
+            name = request.data['name'],
+            matric_number = request.data['matric_number'],
+            college = request.data['college'],
+            department = request.data['department'],
+        )  
+        
     serializer = StudentSerializer(students, many=True)
     data = serializer.data
     return Response(data)
