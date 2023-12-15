@@ -5,14 +5,17 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Student
-from .serializer import StudentSerializer
+from .models import Student,School
+from .serializer import StudentSerializer, SchoolSerializer
 
 # Create your views here.
 
 @api_view(["GET"])
 def endpoints(request):
-    data = ['students', 'student/:username']
+    data = ['students', 
+            'student/:username',
+            'schools/',
+            'school/:name']
     return Response(data)
 
 
@@ -58,3 +61,25 @@ def student(request, matric_number):
         student.save() 
         return Response("User was updated")
     
+
+@api_view(['GET', 'POST'])
+def schools(request):
+    if request.method == "GET":
+        schools = School.objects.all()
+        school_serializer = SchoolSerializer(schools, many=True)
+        data = school_serializer.data
+        return Response(data)
+    if request.method == "POST":
+        school = School.objects.create(
+            name = request.data['name'],
+            State = request.data['State'],
+            ownership_type = request.data['ownership_type']
+
+        )
+        school_serializer = SchoolSerializer(school, many=False)
+        data = school_serializer.data
+        return Response(data)
+
+
+def school(request, name):
+    pass
