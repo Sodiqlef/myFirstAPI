@@ -85,5 +85,22 @@ def schools(request):
         return Response(data)
 
 
+@api_view(['GET', 'PUT'])
 def school(request, name):
-    pass
+    try:
+        school = School.objects.get(name=name)
+        if request.method == "GET":
+            school_serializer = SchoolSerializer(school, many=False)
+            data = school_serializer.data
+            return Response(data)
+        if request.method == "PUT":
+            updated_school = School.objects.update(
+                name = request.data['name'],
+                State = request.data['State'],
+                ownership_type = request.data['ownership_type']
+            )
+            school_serializer = SchoolSerializer(school, many=False)
+            data = school_serializer.data
+            return Response(data)
+    except ObjectDoesNotExist:
+        return Response({'error': 'school not found'}, status=404)
