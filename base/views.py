@@ -45,6 +45,7 @@ def students(request):
 
 @api_view(["GET", 'DELETE', 'PUT'])
 def student(request, matric_number):
+    
     student = Student.objects.get(matric_number=matric_number)
     if request.method == 'GET':
         serializer = StudentSerializer(student)
