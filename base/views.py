@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -45,23 +46,25 @@ def students(request):
 
 @api_view(["GET", 'DELETE', 'PUT'])
 def student(request, matric_number):
-    
-    student = Student.objects.get(matric_number=matric_number)
-    if request.method == 'GET':
-        serializer = StudentSerializer(student)
-        data = serializer.data
-        return Response(data)
-    if request.method == 'DELETE':
-        student.delete()
-        return Response("User was deleted")
-    if request.method == 'PUT':
-        student.name = request.data['name']
-        student.matric_number = request.data['matric_number']
-        student.college = request.data['college']
-        student.department = request.data['department']
-        student.save() 
-        return Response("User was updated")
-    
+    try:
+        student = Student.objects.get(matric_number=matric_number)
+        if request.method == 'GET':
+            serializer = StudentSerializer(student)
+            data = serializer.data
+            return Response(data)
+        if request.method == 'DELETE':
+            student.delete()
+            return Response("User was deleted")
+        if request.method == 'PUT':
+            student.name = request.data['name']
+            student.matric_number = request.data['matric_number']
+            student.college = request.data['college']
+            student.department = request.data['department']
+            student.save() 
+            return Response("User was updated")
+    except ObjectDoesNotExist:
+        return Response({'error': 'Student does not exist'}, status=404)  # 404 Not Found
+   
 
 @api_view(['GET', 'POST'])
 def schools(request):
