@@ -3,8 +3,9 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Student,School
 from .serializer import StudentSerializer, SchoolSerializer
@@ -21,6 +22,7 @@ def endpoints(request):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
 def students(request):
     students = Student.objects.all()
     if request.method == 'GET':
